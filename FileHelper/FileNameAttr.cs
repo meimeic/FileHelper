@@ -20,10 +20,15 @@ namespace FileHelper
         private string _idNo;
         private string _sectionNo;
         private string _reportDate;
-        private int _serialNo;
+        private string _serialNo;
         private string _sequenceNo;
         private string _fileNameString;
         private bool _isLegal;
+
+        public FileNameAttr()
+        {
+            this._isLegal = true;
+        }
         public string PatientId
         {
             get { return _patientId; }
@@ -84,7 +89,7 @@ namespace FileHelper
             get { return _reportDate; }
             set { _reportDate = value; }
         }
-        public int SerialNo
+        public string SerialNo
         {
             get { return _serialNo; }
             set { _serialNo = value; }

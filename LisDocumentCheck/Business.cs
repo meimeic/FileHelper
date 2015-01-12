@@ -17,7 +17,7 @@ namespace LisDocumentCheck
         private string fileType;
         public Business()
         {
-            this.currentPath = Record.GetPathRoot();
+            this.currentPath = Record.GetLisHosPathRoot();
             this.folder = new MyFoler(this.currentPath);
         }
         public Business(string path)
@@ -102,34 +102,34 @@ namespace LisDocumentCheck
                 //没有则不进行比较
             }
         }
-        private void CheckBaseDB(List<FileNameAttr> fileNameList,DataTable dt)
-        {
-            int listIndex = 0;
-            for(int i=0;i<dt.Rows.Count;i++)
-            {
-                if (listIndex < fileNameList.Count)
-                {
-                    while (int.Parse(dt.Rows[i]["serialno"].ToString()) > fileNameList[listIndex].SerialNo)
-                    {
-                        //该pdf记录在数据库里没有
-                        listIndex++;
-                    }
-                    if (int.Parse(dt.Rows[i]["serialno"].ToString()) == fileNameList[listIndex].SerialNo)
-                    {
-                        //数据库-pdf均有此条记录
-                        listIndex++;
-                    }
-                    else
-                    {
-                        //数据库里记录不存在pdf;
-                    }
-                }
-                else
-                {
-                    //数据库里的记录不存在对应的pdf;
-                }
-            }
-        }
+        //private void CheckBaseDB(List<FileNameAttr> fileNameList,DataTable dt)
+        //{
+        //    int listIndex = 0;
+        //    for(int i=0;i<dt.Rows.Count;i++)
+        //    {
+        //        if (listIndex < fileNameList.Count)
+        //        {
+        //            while (int.Parse(dt.Rows[i]["serialno"].ToString()) > fileNameList[listIndex].SerialNo)
+        //            {
+        //                //该pdf记录在数据库里没有
+        //                listIndex++;
+        //            }
+        //            if (int.Parse(dt.Rows[i]["serialno"].ToString()) == fileNameList[listIndex].SerialNo)
+        //            {
+        //                //数据库-pdf均有此条记录
+        //                listIndex++;
+        //            }
+        //            else
+        //            {
+        //                //数据库里记录不存在pdf;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            //数据库里的记录不存在对应的pdf;
+        //        }
+        //    }
+        //}
         //清洗，排序
         private List<FileNameAttr> ListOperate(List<FileNameAttr> fileNameList)
         {

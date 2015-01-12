@@ -7,6 +7,8 @@ namespace FileHelper
 {
     public interface IFile
     {
-        bool CheckPath(string path);
+        string TypeName { get; }
+        string Name { get; }
+
     }
 }

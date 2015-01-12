@@ -24,7 +24,7 @@ namespace LisDocumentCheck
                 Business mb = new Business(textBox1.Text);
                 if (mb.HaveCorrectFile())
                 {
-                    mb.Check(2);
+                    mb.Check();
                 }
                 else
                 {
@@ -38,10 +38,9 @@ namespace LisDocumentCheck
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            this.folderBrowserDialog1.SelectedPath = Record.GetPathRoot();
+            this.folderBrowserDialog1.SelectedPath = Record.GetLisHosPathRoot();
             this.folderBrowserDialog1.ShowDialog();
             string path = this.folderBrowserDialog1.SelectedPath;
-            this.label3.Text = Record.Intercepts(path);
             //string testString = "F:\\hadoop-2.2.0-src\\hadoop-common-project\\hadoop-common\\src";
             //Record.SetPathRoot("F:\\hadoop-2.2.0-src\\hadoop-common-project");
             //string result = Record.Intercepts(testString);
@@ -49,12 +48,14 @@ namespace LisDocumentCheck
 
         private void button3_Click(object sender, EventArgs e)
         {
+            LisBusiness lb = new LisBusiness();
+            lb.Check();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             this.folderBrowserDialog1.ShowDialog();
-            Record.SetPathRoot(this.folderBrowserDialog1.SelectedPath);
+            Record.SetLisHosPathRoot(this.folderBrowserDialog1.SelectedPath);
             this.textBox2.Text = this.folderBrowserDialog1.SelectedPath;
         }
 

@@ -8,7 +8,5 @@ namespace LisDocumentCheck
    public abstract class SuperBusiness
     {
        public abstract void Check();
-
-
     }
 }

@@ -5,28 +5,18 @@ using System.Text;
 using System.IO;
 namespace FileHelper
 {
-    public class MyFoler:SuperFile
+    public class MyFoler:SuperFolder
     {
         private MyFile myfile;
-        private string path;
-        private DirectoryInfo di;
-        //private List<MyFoler> subfolders;
-        //private MyFoler parentfolder;
         public MyFoler()
         {}
         public MyFoler(string path)
+            : base(path)
         {
-            di = new DirectoryInfo(path);
-            this.path = path;
-            this.Name = di.Name;
-            this.lastWriteTime = di.LastWriteTime;
         }
         public MyFoler(DirectoryInfo di)
+            : base(di)
         {
-            this.di = di;
-            this.Name = di.Name;
-            this.path = di.FullName;
-            this.lastWriteTime = di.LastWriteTime;
         }
         //获取文件夹下的文件名信息集合
         public List<FileNameAttr> GetFileNameAttrs(string fileType,int searchType)
@@ -34,7 +24,7 @@ namespace FileHelper
             List<FileNameAttr> fileNameList = new List<FileNameAttr>();
             if (searchType == 1)
             {
-                foreach (FileInfo fi in di.GetFiles("*" + fileType, SearchOption.TopDirectoryOnly))
+                foreach (FileInfo fi in DI.GetFiles("*" + fileType, SearchOption.TopDirectoryOnly))
                 {
                     myfile = new MyFile(fi);
                     fileNameList.Add(myfile.GetNameAttr());
@@ -47,7 +37,7 @@ namespace FileHelper
             //}
             else
             {
-                foreach (FileInfo fi in di.GetFiles("*"+fileType, SearchOption.AllDirectories))
+                foreach (FileInfo fi in DI.GetFiles("*"+fileType, SearchOption.AllDirectories))
                 {
                     myfile = new MyFile(fi);
                     fileNameList.Add(myfile.GetNameAttr());
@@ -68,7 +58,7 @@ namespace FileHelper
         {
             List<FileNameAttr> fileNameList = new List<FileNameAttr>();
 
-            foreach (FileInfo fi in di.GetFiles(fileNameStr + fileType, SearchOption.TopDirectoryOnly))
+            foreach (FileInfo fi in DI.GetFiles(fileNameStr + fileType, SearchOption.TopDirectoryOnly))
             {
                 this.myfile = new MyFile(fi);
                 fileNameList.Add(this.myfile.GetNameAttr());
@@ -83,7 +73,7 @@ namespace FileHelper
         public List<MyFile> GetFiles()
         {
             List<MyFile> myFileList = new List<MyFile>();
-             DirectoryInfo di = new DirectoryInfo(path);
+             DirectoryInfo di = new DirectoryInfo(Path);
              foreach (FileInfo fi in di.GetFiles())
              {
                  myfile = new MyFile(fi);
@@ -94,7 +84,7 @@ namespace FileHelper
         public List<MyFile> GetMyFiles(string fileType)
         {
             List<MyFile> myFileList = new List<MyFile>();
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new DirectoryInfo(Path);
             foreach (FileInfo fi in di.GetFiles("*"+fileType))
             {
                 myfile = new MyFile(fi);
@@ -104,7 +94,7 @@ namespace FileHelper
         }
         public MyFile GetFile(string fileName)
         {
-            foreach (FileInfo fi in di.GetFiles(fileName))
+            foreach (FileInfo fi in DI.GetFiles(fileName))
             {
                 myfile = new MyFile(fi);
             }
@@ -113,7 +103,7 @@ namespace FileHelper
         public int GetFileCount()
         {
             int i = 0;
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new DirectoryInfo(Path);
             foreach (FileInfo fi in di.GetFiles())
             {
                 i++;
@@ -123,7 +113,7 @@ namespace FileHelper
         public int GetFileCount(string fileType)
         {
             int i = 0;
-            DirectoryInfo di = new DirectoryInfo(path);
+            DirectoryInfo di = new DirectoryInfo(Path);
             foreach (FileInfo fi in di.GetFiles("*"+fileType))
             {
                 i++;

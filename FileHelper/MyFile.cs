@@ -7,30 +7,30 @@ namespace FileHelper
 {
     public class MyFile : SuperFile
     {
-        protected string extension;
-        private string fileName;
+        private string _fileName;
         public MyFile()
-        { }
-        public MyFile(FileInfo f)
         {
-            this.Name = f.Name;
-            this.extension = f.Extension;
-            this.lastWriteTime = f.LastWriteTime;
-            this.fileName = f.Name.Replace(f.Extension, "");
+ 
+        }
+        public MyFile(FileInfo f)
+            : base(f)
+        {
+            this._fileName = f.Name.Replace(f.Extension, "");
         }
         public MyFile(string path)
+            : base(path)
         {
-            FileInfo f = new FileInfo(path);
-            this.Name = f.Name;
-            this.extension = f.Extension;
-            this.lastWriteTime = f.LastWriteTime;
-            this.fileName = f.Name.Replace(f.Extension, "");
+            this._fileName = this.Name.Replace(this.Extension, "");
+        }
+        public string FileName
+        {
+            get { return this._fileName; }
         }
         public FileNameAttr GetNameAttr()
         {
             FileNameAttr fna = new FileNameAttr();
-            fna.SetFileNameString(this.fileName);
-            string[] nameArry = this.fileName.Split(new char[] {'_'});
+            fna.SetFileNameString(this._fileName);
+            string[] nameArry = this._fileName.Split(new char[] {'_'});
             if (nameArry.Length != FileNameAttr.AttrCount)
             {
                 //存在非法文件名--写入日志
@@ -42,20 +42,20 @@ namespace FileHelper
                 fna.SetLegal(true);
 
                 //设置属性
-                fna.PatientId = nameArry[0];
-                fna.ClinicType = nameArry[1];
-                fna.SystemType = nameArry[2];
-                fna.AdmissonDate = nameArry[3];
-                fna.LisDept = nameArry[4];
-                fna.VisitTimes = nameArry[5];
-                fna.DocumentCode = nameArry[6];
-                fna.DischargeDate = nameArry[7];
-                fna.DocumentType = nameArry[8];
-                fna.IdNo = nameArry[9];
-                fna.SectionNo = nameArry[10];
-                fna.ReportDate = nameArry[11];
-                fna.SerialNo =int.Parse(nameArry[12].ToString());
-                fna.SequenceNo = nameArry[13];
+                fna.PatientId = nameArry[0] == "" ? "%" : nameArry[0];
+                fna.ClinicType = nameArry[1] == "" ? "%" : nameArry[1];
+                fna.SystemType = nameArry[2] == "" ? "%" : nameArry[2];
+                fna.AdmissonDate = nameArry[3] == "" ? "%" : nameArry[3];
+                fna.LisDept = nameArry[4] == "" ? "%" : nameArry[4];
+                fna.VisitTimes = nameArry[5] == "" ? "%" : nameArry[5];
+                fna.DocumentCode = nameArry[6] == "" ? "%" : nameArry[6];
+                fna.DischargeDate = nameArry[7] == "" ? "%" : nameArry[7];
+                fna.DocumentType = nameArry[8] == "" ? "%" : nameArry[8];
+                fna.IdNo = nameArry[9] == "" ? "%" : nameArry[9];
+                fna.SectionNo = nameArry[10] == "" ? "%" : nameArry[10];
+                fna.ReportDate = nameArry[11] == "" ? "%" : nameArry[11];
+                fna.SerialNo = nameArry[12] == "" ? "%" : nameArry[12];
+                fna.SequenceNo = nameArry[13] == "" ? "%" : nameArry[13];
                 return fna;
             }
         }
@@ -87,30 +87,5 @@ namespace FileHelper
         //        return "";
         //    }
         //}
-        public DateTime  GetLastWriteTime()
-        {
-            return this.lastWriteTime;
-        }
-        public string GetFileName(bool hasExtension)
-        {
-            if (hasExtension)
-            {
-                return this.fileName;
-               
-            }
-            else
-            {
-                return this.Name;
-            }
-        }
-        public string GetFileName()
-        {
-            return this.GetFileName(true);
-        }
-        //包含点(.)
-        public string GetExtension()
-        {
-            return this.extension;
-        }
     }
 }
