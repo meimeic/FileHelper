@@ -11,7 +11,7 @@ namespace FileHelper
         private string _typeName;
         private DirectoryInfo _di;
         private string _path;
-        public SuperFolder()
+        private SuperFolder()
         {
             this._typeName = "文件夹";
         }
@@ -26,6 +26,11 @@ namespace FileHelper
         {
             this._path = path;
             this._di = new DirectoryInfo(path);
+        }
+        //检查路径是否存在
+        public static bool CheckPath(string path)
+        {
+            return Directory.Exists(path);
         }
         public string Name
         {

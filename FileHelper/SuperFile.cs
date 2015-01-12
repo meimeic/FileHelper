@@ -9,10 +9,13 @@ namespace FileHelper
 {
     public  class SuperFile : IFile
     {
+        //文件全名。
          private string _name;
+        //类别，文件还是目录。
          private string _typeName;
+        //文件扩展类型。
          private string _extension;
-         public SuperFile()
+         private SuperFile()
          {
              this._typeName = "文件";
          }
@@ -43,6 +46,7 @@ namespace FileHelper
                      return true;
                  }
          }
+        //获取指定路径下的文件、文件名称
          public static string GetFileName(string path)
          {
              if (IsFile(path))
@@ -57,10 +61,6 @@ namespace FileHelper
              }
          }
          //检查路径是否合法
-         public static bool CheckPath(string path)
-         {
-             return Directory.Exists(path);
-         }
          public string TypeName
          {
              get { return this._typeName; }

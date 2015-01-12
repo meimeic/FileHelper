@@ -21,15 +21,6 @@ namespace LisDocumentCheck
         {
             if (!textBox1.Text.Trim().Equals("你没有选择目录"))
             {
-                Business mb = new Business(textBox1.Text);
-                if (mb.HaveCorrectFile())
-                {
-                    mb.Check();
-                }
-                else
-                {
-                    MessageBox.Show("当前目录不存在pdf文件，请重新选择！", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);  
-                }
             }
             else
             {

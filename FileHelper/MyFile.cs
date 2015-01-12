@@ -7,11 +7,8 @@ namespace FileHelper
 {
     public class MyFile : SuperFile
     {
+        //文件名
         private string _fileName;
-        public MyFile()
-        {
- 
-        }
         public MyFile(FileInfo f)
             : base(f)
         {

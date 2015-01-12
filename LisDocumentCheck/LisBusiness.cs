@@ -47,12 +47,12 @@ namespace LisDocumentCheck
                     if (Int32.Parse(dr["sicktypeno"].ToString().Trim()) == 1)
                     {
                         string test1 = string.Format("{0:D3}", dr["hospitalizedtimes"]);
-                        //住院
+                        //住院路径
                         checkPath = Path.Combine(Record.GetLisHosPathRoot(), dr["patno"].ToString(), string.Format("{0:D3}", dr["hospitalizedtimes"]), "lis");
                     }
                     else
                     {
-                        //门诊
+                        //门诊路径
 
                     }
                 }

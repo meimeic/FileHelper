@@ -7,23 +7,23 @@ namespace FileHelper
 {
     public class FileNameAttr
     {
-        public static readonly int AttrCount=14;
-        private string _patientId;
-        private string _clinicType;
-        private string _systemType;
-        private string _admissonDate;
-        private string _lisDept;
-        private string _visitTimes;
-        private string _documentCode;
-        private string _dischargeDate;
-        private string _documentType;
-        private string _idNo;
-        private string _sectionNo;
-        private string _reportDate;
-        private string _serialNo;
-        private string _sequenceNo;
-        private string _fileNameString;
-        private bool _isLegal;
+        public static readonly int AttrCount=14;  //文件名包含字段数。
+        private string _patientId; //病人ID
+        private string _clinicType;  //门诊类别(住院、门诊)
+        private string _systemType; //系统类别(lis、emr、pacs等)
+        private string _admissonDate; //入院时间(精确到天)
+        private string _lisDept;  //(科室代码 lis的科室时自有的)
+        private string _visitTimes; //住院次数()
+        private string _documentCode;  //文档名称编码
+        private string _dischargeDate;  //出院时间
+        private string _documentType;  // 文档类型（纸张大小）
+        private string _idNo;    //病人身份证号
+        private string _sectionNo;  // 小组号
+        private string _reportDate;  //报告的审核时间
+        private string _serialNo;   //报告的申请单号
+        private string _sequenceNo;  //报告包含的项目数
+        private string _fileNameString;  //文件全名
+        private bool _isLegal;  //文件名是否合法
 
         public FileNameAttr()
         {
