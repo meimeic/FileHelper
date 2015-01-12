@@ -9,7 +9,6 @@ namespace FileHelper
     {
         public void myTest()
         {
-            SuperFile sf = new SuperFile();
         }
     }
 }
