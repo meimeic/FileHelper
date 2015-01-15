@@ -36,6 +36,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\DBUtility.dll</HintPath>
     </Reference>
+    <Reference Include="FileHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\FileHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -60,6 +64,9 @@
     <Compile Include="Record.cs" />
     <Compile Include="SuperBusiness.cs" />
     <Compile Include="test.cs" />
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -81,12 +88,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FileHelper\FileHelper.csproj">
-      <Project>{c0d339ed-3140-45b8-8f15-01d9197e0ff7}</Project>
-      <Name>FileHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="XMLRecord.xml">

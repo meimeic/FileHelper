@@ -11,9 +11,8 @@ namespace LisDocumentCheck
     {
         private static SortedList mySortedList = new SortedList();
         private static string LisHospitalRootPath = ConfigurationManager.AppSettings["HospitalRootPath"];
-        private static string LisClinicRootPath = ConfigurationManager.AppSettings["ClinicRootPath"]; //当前检查路径
-        private static string checkingPath = "";
-        private static string lastCheckName; //最后检查元素
+        private static string LisClinicRootPath = ConfigurationManager.AppSettings["ClinicRootPath"]; //
+        private static string LisFilter = ConfigurationManager.AppSettings["LisFilter"];
         //public static void init()
         //{
         //    XDocument myDoc = XDocument.Load("XMLRecord.xml");
@@ -65,22 +64,9 @@ namespace LisDocumentCheck
         {
             return Record.LisHospitalRootPath;
         }
-        public static bool AddCheckedFolder(bool addXML)
+        public static string GetLisClinicPathRoot()
         {
-            if (mySortedList != null)
-            {
-                long checkDate = DateTime.Now.Ticks;
-                mySortedList.Add(checkDate.ToString(), Record.checkingPath);
-                if (addXML)
-                {
-                    SaveToXML();
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Record.LisClinicRootPath;
         }
         public static bool IsChecked(string path)
         {
@@ -93,17 +79,16 @@ namespace LisDocumentCheck
                 return false;
             }
         }
-        public static void SaveToXML()
+        public static string[] GetLisQueryCondition()
         {
-            XDocument myDoc = XDocument.Load("XMLRecord.xml");
-            XElement root = myDoc.Root;
-            XElement xRecord = root.Element("record");
-            XElement xPathRoot = xRecord.Element("pathroot");
-            LisHospitalRootPath = xPathRoot.Value;
-            XElement xChecked = xRecord.Element("checked");
-            XElement xNew = new XElement("item", new XAttribute("checkedDate", DateTime.Now.Ticks.ToString()), new XAttribute("checkedPath", Record.checkingPath), new XAttribute("IsChecked", "1"), new XAttribute("lastCheckName",Record.lastCheckName));
-            xChecked.Add(xNew);
-            myDoc.Save("XMLRecord.xml");
+            if (Record.LisFilter != null && !Record.LisFilter.Equals(""))
+            {
+                return Record.LisFilter.Split(new char[] { ';' });
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
