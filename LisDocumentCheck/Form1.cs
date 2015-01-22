@@ -18,23 +18,8 @@ namespace LisDocumentCheck
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DateTime checkDate = dateTimePicker1.Value;
-            //textBox1.Text= string.Format("{0:yyyy-MM-dd}", checkDate);
-            SuperBusiness mb = new LisBusiness();
-            mb.CheckCondition = string.Format("{0:yyyy-MM-dd}", checkDate);
-            if (mb.IsChecked())
-            {
-                //此内容已检查
-            }
-            else
-            {
-                mb.Check();
-            }
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
+            SuperBusiness sb = new LisBusiness();
+            List<IResult> temp = sb.LisReport(textBox1.Text);
         }
     }
 }

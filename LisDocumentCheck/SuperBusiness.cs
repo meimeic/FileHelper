@@ -15,16 +15,12 @@ namespace LisDocumentCheck
        }
        public virtual void Check()
        {
-           if (IsChecked())
-           {
-               //已检测
-           }
-           else
-           {
-               CheckOnDB();
-           }
+           CheckOnDB();
        }
        public abstract bool IsChecked();
        protected abstract void CheckOnDB();
+
+       public abstract List<IResult> LisReport(string serialNo);
+       public abstract List<IResult> LisReports(List<string> serialNos);
     }
 }
