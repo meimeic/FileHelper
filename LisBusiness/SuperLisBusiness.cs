@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-namespace LisDocumentCheck
+namespace LisBusiness
 {
-   public abstract class SuperBusiness
+   public abstract class SuperLisBusiness
     {
        private string _checkCondition;
        public string CheckCondition

@@ -5,8 +5,7 @@ using System.Text;
 
 namespace LisBusiness
 {
-    class test
+    public class Class1
     {
-
     }
 }

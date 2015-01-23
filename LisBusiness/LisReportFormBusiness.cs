@@ -9,11 +9,11 @@ using DBUtility;
 using FileHelper;
 using System.Configuration;
 using log4net;
-namespace LisDocumentCheck
+namespace LisBusiness
 {
-    class LisBusiness : SuperBusiness
+   public class LisReportFormBusiness : SuperLisBusiness
     {
-        static readonly ILog LOG = LogManager.GetLogger(typeof(LisBusiness));
+        static readonly ILog LOG = LogManager.GetLogger(typeof(LisReportFormBusiness));
         //从lis数据库获取已审核报告记录
         //拼接查询条件
         private string CombineQueryCondition(string[] QueryCondition)
@@ -36,11 +36,11 @@ namespace LisDocumentCheck
             string[] QueryCondition = Record.GetLisQueryCondition();
             if (QueryCondition != null)
             {
-                where = "where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'" + CombineQueryCondition(QueryCondition);
+                where = " where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'" + CombineQueryCondition(QueryCondition);
             }
             else
             {
-                where = "where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'";
+                where = " where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'";
             }
             DataTable dt = getReportFormTable(getReportSQLString(where));
             List<FileNameAttr> temp;
@@ -317,6 +317,10 @@ namespace LisDocumentCheck
                         //不存在pdf文件路径
                         else
                         {
+                            if (checkPath == null)
+                            {
+                                LOG.Error("病案号为：" + dr["patno"].ToString() + "的患者:" + dr["cname"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + ",小组号为：" + dr["sectionno"].ToString() + "的记录存在错误！！");
+                            }
                             fillListByReportDr(dr, temp, 1);
                             lisResult.Add(temp);
                         }
@@ -333,19 +337,22 @@ namespace LisDocumentCheck
         //获取已生成pdf的记录
         private DataTable getPDFRecord(List<string> serialNos)
         {
-            string sql = getPDFSQLString(serialNos);
-            return getPDFTable(sql);
+            string where = getPDFSQLWhere(serialNos);
+            return getPDFTable(getPDFSQLString(where));
         }
         private DataTable getPDFTable(string sql)
         {
             DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["MyMSSQLConnectionString"].ConnectionString.ToString();
             return DbHelperSQL.Query(sql).Tables[0];
         }
-        private string getPDFSQLString(List<string> serialNos)
+        protected virtual string getPDFSQLString(string where)
+        {
+            return "SELECT FileName,FileType,FilePath,SickType,SectionNo,ReportDate,SerialNo,ReportName FROM PDFRecord" + where;
+        }
+        private string getPDFSQLWhere(List<string> serialNos)
         {
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.Append("SELECT FileName,FileType,FilePath,SickType,SectionNo,ReportDate,SerialNo,ReportName");
-            sqlstr.Append(" FROM PDFRecord where serialno in(");
+            sqlstr.Append(" where serialno in(");
             foreach (string serialNo in serialNos)
             {
                 sqlstr.Append("'" + serialNo + "',");
@@ -360,9 +367,9 @@ namespace LisDocumentCheck
             return dt.Select(where);
 
         }
-        private List<FileNameAttr> getPDFFromFS(string checkPath, string fileName)
+        private List<FileNameAttr> getPDFFromFS(string filePath, string fileName)
         {
-            MyFoler mf = new MyFoler(checkPath);
+            MyFoler mf = new MyFoler(filePath);
             return ListOperate(mf.GetSpecificFileNameAttrs(fileName));
         }
         private string getCheckPath(DataRow dr)
@@ -448,12 +455,10 @@ namespace LisDocumentCheck
             DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
             return DbHelperSQL.Query(sql).Tables[0];
         }
-        private string getReportSQLString(List<string> serialNos)
+        private string getReportSQLWhere(List<string> serialNos)
         {
-            DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.Append("select sicktypeno,patno,hospitalizedtimes,cname,sectionno,checkdate,serialno,zdy1,paritemname");
-            sqlstr.Append(" from reportform where serialno in(");
+            sqlstr.Append(" where serialno in(");
             foreach (string serialNo in serialNos)
             {
                 sqlstr.Append("'" + serialNo + "',");
@@ -462,14 +467,14 @@ namespace LisDocumentCheck
             sqlstr.Append(")");
             return sqlstr.ToString();
         }
-        private string getReportSQLString(string where)
+        protected virtual string getReportSQLString(string where)
         {
-            return "select sicktypeno,patno,hospitalizedtimes,cname,sectionno,checkdate,serialno,zdy1,paritemname from reportform " + where;
+            return "select sicktypeno,patno,hospitalizedtimes,cname,sectionno,checkdate,serialno,zdy1,paritemname from reportform" + where;
         }
         private DataTable getReportRecorde(List<string> serialNos)
         {
-            string sql = getReportSQLString(serialNos);
-            return getReportFormTable(sql);
+            string where = getReportSQLWhere(serialNos);
+            return getReportFormTable(getReportSQLString(where));
         }
     }
 }

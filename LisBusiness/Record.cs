@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.Configuration;
-namespace LisDocumentCheck
+namespace LisBusiness
 {
     class Record
     {
