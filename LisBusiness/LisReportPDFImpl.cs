@@ -103,7 +103,6 @@ namespace LisBusiness
         {
             string where = "serialno ='" + serialNo + "'";
             return dt.Select(where);
-
         }
     }
 }

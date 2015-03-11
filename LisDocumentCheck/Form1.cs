@@ -18,8 +18,6 @@ namespace LisBusiness
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SuperLisBusiness sb = new LisReportPDFService();
-            List<IResult> temp = sb.LisReport(textBox1.Text);
         }
 
         private void Form1_Load(object sender, EventArgs e)

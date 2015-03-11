@@ -235,11 +235,6 @@ namespace LisBusiness
             return dt.Select(where);
 
         }
-        private List<FileNameAttr> getPDFFromFS(string filePath, string fileName)
-        {
-            MyFoler mf = new MyFoler(filePath);
-            return ListOperate(mf.GetSpecificFileNameAttrs(fileName));
-        }
         private void fillListByReportDr(DataRow dr, LisReportResult temp, int status)
         {
             temp.ReportDate = dr["checkdate"].ToString();
@@ -262,7 +257,7 @@ namespace LisBusiness
             temp.ReportStatus = status;
         }
 
-        protected override string getReportSQLWhere(string startDate,string endDate)
+        protected string getReportSQLWhere(string startDate,string endDate)
         {
             return " where checkdate>'" + startDate + "' and checkdate<'" + endDate + "'";
         }

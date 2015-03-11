@@ -11,7 +11,7 @@ using log4net;
 
 namespace LisBusiness
 {
-    public abstract class LisReportPDF:ILisReportPDF
+    public abstract class LisReportPDF
     {
         static readonly ILog LOG = LogManager.GetLogger(typeof(LisReportPDF));
 
