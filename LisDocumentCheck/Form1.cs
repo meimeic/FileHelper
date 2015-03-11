@@ -18,7 +18,7 @@ namespace LisBusiness
 
         private void button1_Click(object sender, EventArgs e)
         {
-            SuperLisBusiness sb = new LisReportFormBusiness();
+            SuperLisBusiness sb = new LisReportPDFService();
             List<IResult> temp = sb.LisReport(textBox1.Text);
         }
 

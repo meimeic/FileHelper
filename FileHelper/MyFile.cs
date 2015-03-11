@@ -49,8 +49,8 @@ namespace FileHelper
                 fna.DischargeDate = nameArry[7] == "" ? "%" : nameArry[7];
                 fna.DocumentType = nameArry[8] == "" ? "%" : nameArry[8];
                 fna.IdNo = nameArry[9] == "" ? "%" : nameArry[9];
-                fna.SectionNo = nameArry[10] == "" ? "%" : nameArry[10];
-                fna.ReportDate = nameArry[11] == "" ? "%" : nameArry[11];
+                fna.ReportDate = nameArry[10] == "" ? "%" : nameArry[10];
+                fna.SectionNo = nameArry[11] == "" ? "%" : nameArry[11];
                 fna.SerialNo = nameArry[12] == "" ? "%" : nameArry[12];
                 fna.SequenceNo = nameArry[13] == "" ? "%" : nameArry[13];
                 return fna;

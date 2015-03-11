@@ -96,8 +96,8 @@ namespace FileHelper
         }
         public string SequenceNo
         {
-            get { return _sequenceNo; }
-            set { _sequenceNo = value; }
+            get { return this._sequenceNo; }
+            set { this._sequenceNo = value; }
         }
         public void SetFileNameString(string s)
         {

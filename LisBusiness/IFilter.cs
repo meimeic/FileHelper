@@ -5,7 +5,9 @@ using System.Text;
 
 namespace LisBusiness
 {
-    public class Class1
+    interface IFilter
     {
+        string FilterName { get; }
+
     }
 }

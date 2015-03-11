@@ -11,40 +11,17 @@ using System.Configuration;
 using log4net;
 namespace LisBusiness
 {
-   public class LisReportFormBusiness : SuperLisBusiness
+   public class LisReportPDFService : LisReportPDF
     {
-        static readonly ILog LOG = LogManager.GetLogger(typeof(LisReportFormBusiness));
+        static readonly ILog LOG = LogManager.GetLogger(typeof(LisReportPDFService));
         //从lis数据库获取已审核报告记录
         //拼接查询条件
-        private string CombineQueryCondition(string[] QueryCondition)
-        {
-            StringBuilder strCondition = new StringBuilder();
-            strCondition.Append(" and sectionno in (");
-            strCondition.Append("select distinct sectionno from printform where");
-            foreach (string str in QueryCondition)
-            {
-                strCondition.Append(" printprogram like " + str + " or");
-            }
-            strCondition.Remove(strCondition.Length - 2, 2);
-            strCondition.Append(")");
-            return strCondition.ToString();
-        }
-        protected override void CheckOnDB()
+        protected  void CheckOnDB(string startDate,string endDate)
         {
             //从数据库中获取
-            string where;
-            string[] QueryCondition = Record.GetLisQueryCondition();
-            if (QueryCondition != null)
-            {
-                where = " where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'" + CombineQueryCondition(QueryCondition);
-            }
-            else
-            {
-                where = " where CONVERT(varchar(100),receivedate,23)='" + this.CheckCondition + "'";
-            }
-            DataTable dt = getReportFormTable(getReportSQLString(where));
+            string where = getReportSQLWhere(startDate, endDate);
+            DataTable dt = getReportRecorde(where);
             List<FileNameAttr> temp;
-            MyFoler mf;
             string checkPath;
             string fileNameLike;
             foreach (DataRow dr in dt.Rows)
@@ -53,58 +30,38 @@ namespace LisBusiness
                 checkPath = getCheckPath(dr);
                 //文件名
                 fileNameLike = getFileName(dr);
-                if (checkPath!=null&&checkPath!="")
+                //文件路径存在
+                if (checkPath != null)
                 {
-                    mf = new MyFoler(checkPath);
                     //清洗数据
-                    temp = ListOperate(mf.GetSpecificFileNameAttrs(fileNameLike));
+                    temp = getPDFFromFS(checkPath, fileNameLike);
                     if (temp.Count == 0)
                     {
                         //没有生成pdf
-                        LOG.Info("病案号为：" + dr["patno"].ToString() + "的患者:" + dr["cname"].ToString() + ",申请单号为" + dr["serialno"].ToString() + "小组号为：" + dr["sectionno"].ToString() + ",对应报告未生成PDF文件");
+                        LOG.Warn("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "不存在合法的pdf文件！！");
                     }
                     else if (temp.Count == 1)
                     {
                         //有pdf
                         FileNameAttr result = temp[0];
-                        AddToPDFTable(result, dr, checkPath, "1", "正常");
+                        LOG.Info("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在合法的pdf文件," + "文件路径为:" + checkPath+"\\"+ result.GetFileNameString());
+                        //LOG.Info("开始---->生成的pdf记录写入PDF表");
+                        //AddToPDFTable(result, dr, checkPath, "1", "正常");
+                        //LOG.Info("结束---->生成的pdf记录写入PDF表");
                     }
                     else
                     {
                         //生成多个pdf
                         FileNameAttr result = temp[0];
                         AddToPDFTable(result, dr, checkPath, "1", "正常");
+                        LOG.Error("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在多个合法的pdf文件！！！");
                     }
                 }
-                //路径不存在
-                else if (checkPath == "")
-                {
-                    LOG.Info("病案号为：" + dr["patno"].ToString() + "的患者:" + dr["cname"].ToString() + ",申请单号为" + dr["serialno"].ToString() + "小组号为：" + dr["sectionno"].ToString() + "的记录,未有对应文件夹");
-                }
-                else
-                {
-                    LOG.Error("病案号为：" + dr["patno"].ToString() + "的患者:" + dr["cname"].ToString() + ",申请单号为" + dr["serialno"].ToString() + "小组号为：" + dr["sectionno"].ToString() + "的记录存在错误！！");
-                }
             }
         }
-        public override bool IsChecked()
-        {
-            return false;
-        }
+
         private void CheckBaseOnFS()
         {
-        }
-        private List<FileNameAttr> ListOperate(List<FileNameAttr> fileNameList)
-        {
-            if (fileNameList.Count != 0)
-            {
-                var sortResult = from items in fileNameList where items.GetLegal() == true orderby items.ReportDate descending select items;
-                return sortResult.ToList();
-            }
-            else
-            {
-                return fileNameList;
-            }
         }
         private bool AddToPDFTable(FileNameAttr result, DataRow dr, string checkPath, string fileStatus, string checkSpec)
         {
@@ -246,95 +203,6 @@ namespace LisBusiness
                 return false;
             }
         }
-        public override List<IResult> LisReport(string serialNo)
-        {
-            List<string> serialNos = new List<string>();
-            serialNos.Add(serialNo);
-            return LisReports(serialNos);
-        }
-        public override List<IResult> LisReports(List<string> serialNos)
-        {
-            LisReportResult temp = null;
-            //申请单表单
-            DataTable ReportForm = getReportRecorde(serialNos);
-            DataTable PDFTable =getPDFRecord(serialNos);
-            //结果
-            List<IResult> lisResult = new List<IResult>();
-            DataRow[] Reportdr;
-            DataRow[] PDFdr;
-            foreach (string serialNo in serialNos)
-            {
-                temp = new LisReportResult();
-                Reportdr = getRows(ReportForm, serialNo);
-
-                //查看该申请单号在lis中是否存在
-                if (Reportdr.Length == 0)
-                {
-                    temp.SerialNo = serialNo;
-                    //未有此申请单号
-                    temp.ReportStatus = 2;
-                    lisResult.Add(temp);
-                }
-
-                //申请号对应一个报告
-                else if (Reportdr.Length == 1)
-                {
-                    PDFdr = getRows(PDFTable, serialNo);
-                    //判断该申请单号是否有pdf文件记录
-                    if (PDFdr.Length > 0)
-                    {
-                        //有pdf文件记录
-                        fillListByPDFDr(PDFdr[0], temp, 0);
-                        lisResult.Add(temp);
-                    }
-                    //没有pdf文件记录
-                    else
-                    {
-                        DataRow dr = Reportdr[0];
-                        //获取可能存在的文件路径
-                        string checkPath = getCheckPath(dr);
-                        //是否有pdf文件
-                        if (checkPath != null && checkPath != "")
-                        {
-                            List<FileNameAttr> fileNameList = getPDFFromFS(checkPath, getFileName(dr));
-                            if (fileNameList.Count != 0)
-                            {
-                                FileNameAttr fna = fileNameList[0];
-                                //将已生成pdf文件的记录写入数据库
-                                AddToPDFTable(fna, dr, checkPath);
-                                temp.FileName = fna.GetFileNameString() + ".pdf";
-                                temp.FilePath = checkPath;
-                                fillListByReportDr(dr, temp, 0);
-                                lisResult.Add(temp);
-                            }
-                            //未生成pdf
-                            else
-                            {
-                                fillListByReportDr(dr, temp, 1);
-                                lisResult.Add(temp);
-                            }
-                        }
-                        //不存在pdf文件路径
-                        else
-                        {
-                            if (checkPath == null)
-                            {
-                                LOG.Error("病案号为：" + dr["patno"].ToString() + "的患者:" + dr["cname"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + ",小组号为：" + dr["sectionno"].ToString() + "的记录存在错误！！");
-                            }
-                            fillListByReportDr(dr, temp, 1);
-                            lisResult.Add(temp);
-                        }
-                    }
-                }
-                //一个申请单对应多个报告
-                else
-                {
-                    LOG.Info("申请单号为：" + serialNo + "  对应多个报告，暂时跳过！");
-                }
-            }
-            return lisResult;
-        }
-        //获取已生成pdf的记录
         private DataTable getPDFRecord(List<string> serialNos)
         {
             string where = getPDFSQLWhere(serialNos);
@@ -372,63 +240,6 @@ namespace LisBusiness
             MyFoler mf = new MyFoler(filePath);
             return ListOperate(mf.GetSpecificFileNameAttrs(fileName));
         }
-        private string getCheckPath(DataRow dr)
-        {
-            string checkPath = "";
-            if (dr["patno"] != null && dr["patno"].ToString() != "" && dr["sicktypeno"] != null && dr["sicktypeno"].ToString() != "")
-            {
-                if (Int32.Parse(dr["sicktypeno"].ToString().Trim()) == 1 || Int32.Parse(dr["sicktypeno"].ToString().Trim()) == 4)
-                {
-                    //住院
-                    if (dr["hospitalizedtimes"] != null && dr["hospitalizedtimes"].ToString() != "")
-                    {
-                        checkPath = Path.Combine(Record.GetLisHosPathRoot(), dr["patno"].ToString(), string.Format("{0:D3}", dr["hospitalizedtimes"]), "lis");
-                        if (MyFoler.CheckPath(checkPath))
-                        {
-                            return checkPath;
-                        }
-                        else
-                        {
-                            //pdf路径不存在 
-                            return "";
-                        }
-                    }
-                    else
-                    {
-                        //住院次数不存在
-                        return null;
-                    }
-                }
-                //门诊
-                else if (Int32.Parse(dr["sicktypeno"].ToString().Trim()) == 2 || Int32.Parse(dr["sicktypeno"].ToString().Trim()) == 3)
-                {
-                    checkPath = Path.Combine(Record.GetLisClinicPathRoot(), string.Format("{0:yyyyMMdd}", dr["checkdate"]));
-                    if (MyFoler.CheckPath(checkPath))
-                    {
-                        return checkPath;
-                    }
-                    else
-                    {
-                        //pdf路径不存在
-                        return "";
-                    }
-                }
-                else
-                {
-                    //未知门诊类型
-                    return null;
-                }
-            }
-            else
-            {
-                //病历号、
-                return null;
-            }
-        }
-        private string getFileName(DataRow dr)
-        {
-            return "*" + dr["sectionno"].ToString() + "_" + string.Format("{0:yyyyMMdd}", dr["checkdate"]) + "_" + dr["serialno"].ToString() + "_" + dr["zdy1"].ToString();
-        }
         private void fillListByReportDr(DataRow dr, LisReportResult temp, int status)
         {
             temp.ReportDate = dr["checkdate"].ToString();
@@ -450,31 +261,36 @@ namespace LisBusiness
             temp.SickType = dr["SickType"].ToString();
             temp.ReportStatus = status;
         }
-        private DataTable getReportFormTable(string sql)
+
+        protected override string getReportSQLWhere(string startDate,string endDate)
         {
-            DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
-            return DbHelperSQL.Query(sql).Tables[0];
+            return " where checkdate>'" + startDate + "' and checkdate<'" + endDate + "'";
         }
-        private string getReportSQLWhere(List<string> serialNos)
-        {
-            StringBuilder sqlstr = new StringBuilder();
-            sqlstr.Append(" where serialno in(");
-            foreach (string serialNo in serialNos)
-            {
-                sqlstr.Append("'" + serialNo + "',");
-            }
-            sqlstr.Remove(sqlstr.Length - 1, 1);
-            sqlstr.Append(")");
-            return sqlstr.ToString();
-        }
-        protected virtual string getReportSQLString(string where)
-        {
-            return "select sicktypeno,patno,hospitalizedtimes,cname,sectionno,checkdate,serialno,zdy1,paritemname from reportform" + where;
-        }
-        private DataTable getReportRecorde(List<string> serialNos)
-        {
-            string where = getReportSQLWhere(serialNos);
-            return getReportFormTable(getReportSQLString(where));
-        }
+       //private DataTable getReportFormTable(string sql)
+        //{
+        //    DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
+        //    return DbHelperSQL.Query(sql).Tables[0];
+        //}
+        //private string getReportSQLWhere(List<string> serialNos)
+        //{
+        //    StringBuilder sqlstr = new StringBuilder();
+        //    sqlstr.Append(" where serialno in(");
+        //    foreach (string serialNo in serialNos)
+        //    {
+        //        sqlstr.Append("'" + serialNo + "',");
+        //    }
+        //    sqlstr.Remove(sqlstr.Length - 1, 1);
+        //    sqlstr.Append(")");
+        //    return sqlstr.ToString();
+        //}
+        //protected virtual string getReportSQLString(string where)
+        //{
+        //    return "select sicktypeno,patno,hospitalizedtimes,cname,sectionno,checkdate,serialno,zdy1,paritemname from reportform" + where;
+        //}
+        //private DataTable getReportRecorde(List<string> serialNos)
+        //{
+        //    string where = getReportSQLWhere(serialNos);
+        //    return getReportFormTable(getReportSQLString(where));
+        //}
     }
 }

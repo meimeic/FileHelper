@@ -33,29 +33,33 @@
     <Reference Include="DBUtility">
       <HintPath>..\LisDocumentCheck\lib\DBUtility.dll</HintPath>
     </Reference>
-    <Reference Include="FileHelper">
-      <HintPath>..\LisDocumentCheck\lib\FileHelper.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <HintPath>..\LisDocumentCheck\lib\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="IFilter.cs" />
     <Compile Include="IResult.cs" />
-    <Compile Include="LisReportFormBusiness.cs" />
+    <Compile Include="LisReportPDFService.cs" />
+    <Compile Include="LisReportPDF.cs" />
+    <Compile Include="LisReportPDFImpl.cs" />
     <Compile Include="LisReportResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />
-    <Compile Include="SuperLisBusiness.cs" />
+    <Compile Include="ILisReportPDF.cs" />
+    <Compile Include="SectionFilter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FileHelper\FileHelper.csproj">
+      <Project>{c0d339ed-3140-45b8-8f15-01d9197e0ff7}</Project>
+      <Name>FileHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
