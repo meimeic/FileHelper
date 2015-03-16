@@ -14,29 +14,49 @@ namespace LisBusiness
         {
             get { return SectionFilter._filterName; }
         }
-        public static List<string> FiltrateBySectionNos(List<string> serialNos,int sectionNo)
+        public List<LisSerialResult> FiltrateBySectionNos(List<string> serialNos, int sectionNo)
         {
-            DataTable dt = getSerialNosTable(serialNos, sectionNo);
-            return SerialTableToList(dt); 
+            string where = getSerialNosWhere(serialNos, sectionNo);
+            return this.getLisSerialResult(where);
         }
-        public static List<string> FiltrateBySectionNos(string startDate, string endDate, int sectionNo)
+        public List<LisSerialResult> FiltrateBySectionNos(string startDate, string endDate, int sectionNo)
         {
-            DataTable dt = getSerialNosTable(startDate, endDate, sectionNo);
-            return SerialTableToList(dt); 
+            string where = getSerialNosWhere(startDate, endDate, sectionNo);
+            return this.getLisSerialResult(where);
         }
-        private static List<string> SerialTableToList(DataTable dt)
+        public List<LisSerialResult> FiltrateBySectionNos(string patNo, int visitNo, int sectionNo)
         {
-            List<string> temp = new List<string>();
+            string where = getSerialNosWhere(patNo, visitNo, sectionNo);
+            return this.getLisSerialResult(where);
+        }
+        private List<LisSerialResult> getLisSerialResult(string where)
+        {
+            DataTable dt = getSerialNosRecord(where);
+            return SerialTableToList(dt);
+        }
+        private static List<LisSerialResult> SerialTableToList(DataTable dt)
+        {
+            List<LisSerialResult> temp = new List<LisSerialResult>();
+            LisSerialResult lsr;
             foreach (DataRow dr in dt.Rows)
             {
-                temp.Add(dr["serialno"].ToString());
+                 lsr = new LisSerialResult();
+                lsr.SerialNo = dr["serialno"].ToString();
+                if (Convert.ToString(dr["hissendflag"]).Trim() == "1")
+                {
+                    lsr.PDFFlag=true;
+                }
+                else
+                {
+                    lsr.PDFFlag = false;
+                }
+                temp.Add(lsr);
             }
             return temp;
         }
-        private static DataTable getSerialNosTable(List<string> serialNos,int sectionNo)
+        protected virtual string getSerialNosWhere(List<string> serialNos, int sectionNo)
         {
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.Append("select serialno from reportform");
             sqlstr.Append(" where serialno in(");
             foreach (string serialNo in serialNos)
             {
@@ -44,35 +64,73 @@ namespace LisBusiness
             }
             sqlstr.Remove(sqlstr.Length - 1, 1);
             sqlstr.Append(")");
-            sqlstr.Append(" and section=");
-            sqlstr.Append(sectionNo);
-            DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
-            return DbHelperSQL.Query(sqlstr.ToString()).Tables[0];
+            if (sectionNo >= 0)
+            {
+                sqlstr.Append(" and section=");
+                sqlstr.Append(sectionNo);
+            }
+            return sqlstr.ToString();
         }
-        private static DataTable getSerialNosTable(string startDate, string endDate, int sectionNo)
+        protected virtual string getSerialNosWhere(string startDate, string endDate, int sectionNo)
         {
             StringBuilder sqlstr = new StringBuilder();
-            sqlstr.Append("select serialno from reportform");
             if (sectionNo == 10)
             {
                 sqlstr.Append(" where sendertime2>'");
                 sqlstr.Append(startDate);
                 sqlstr.Append("' and sendertime2<'");
                 sqlstr.Append(endDate);
-                sqlstr.Append("' and sectionno=");
-                sqlstr.Append(sectionNo);
+                sqlstr.Append("'");
             }
-            else 
+            else
             {
                 sqlstr.Append(" where checkdate>'");
                 sqlstr.Append(startDate);
                 sqlstr.Append("' and checkdate<'");
                 sqlstr.Append(endDate);
-                sqlstr.Append("' and sectionno=");
+                sqlstr.Append("'");
+            }
+            if (sectionNo >= 0)
+            {
+                sqlstr.Append(" and section=");
                 sqlstr.Append(sectionNo);
             }
+            sqlstr.Append(" and patno is not null and patno<>''");
+            return sqlstr.ToString();
+        }
+        protected virtual string getSerialNosWhere(string patNo, int visitNo, int sectionNo)
+        {
+            StringBuilder sqlstr = new StringBuilder();
+            sqlstr.Append(" where patNo='");
+            sqlstr.Append(patNo);
+            sqlstr.Append("' and hospitalizedtimes='");
+            sqlstr.Append(visitNo);
+            sqlstr.Append("'");
+            if (sectionNo >= 0)
+            {
+                sqlstr.Append(" and section=");
+                sqlstr.Append(sectionNo);
+            }
+            if(sectionNo==10)
+            {
+                sqlstr.Append(" and sendertime2 is not null and sendertime2 <>''");
+            }
+            return sqlstr.ToString();
+        }
+        protected virtual string getSQLStr(string where)
+        {
+            string sql = "select serialno,hissendflag from reportform" + where;
+            return sql;
+        }
+        private static DataTable getSerialNosTable(string sql)
+        {
             DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
-            return DbHelperSQL.Query(sqlstr.ToString()).Tables[0];
+            return DbHelperSQL.Query(sql).Tables[0];
+        }
+        protected DataTable getSerialNosRecord(string where)
+        {
+            string sql = getSQLStr(where);
+            return getSerialNosTable(sql);
         }
     }
 }

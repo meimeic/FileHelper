@@ -51,6 +51,7 @@
     <Compile Include="LisReportPDF.cs" />
     <Compile Include="LisReportPDFImpl.cs" />
     <Compile Include="LisReportResult.cs" />
+    <Compile Include="LisSerialResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Record.cs" />
     <Compile Include="ILisReportPDF.cs" />

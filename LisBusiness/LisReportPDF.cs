@@ -95,7 +95,7 @@ namespace LisBusiness
             }
         }
         
-        private DataTable getReportFormTable(string sql)
+        private static DataTable getReportFormTable(string sql)
         {
             DbHelperSQL.connectionstring = ConfigurationManager.ConnectionStrings["LisMSSQLConnectionString"].ConnectionString.ToString();
             return DbHelperSQL.Query(sql).Tables[0];
