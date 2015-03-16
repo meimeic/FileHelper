@@ -8,6 +8,7 @@ namespace LisBusiness
     public class LisReportResult:IResult
     {
         private static readonly string _resultType = "lis";
+
         private string _filePath;
         private string _fileName;
         private string _reportDate;

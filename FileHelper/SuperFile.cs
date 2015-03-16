@@ -46,6 +46,10 @@ namespace FileHelper
                      return true;
                  }
          }
+         public static bool fileExist(string path)
+         {
+             return File.Exists(path);
+         }
         //获取指定路径下的文件、文件名称
          public static string GetFileName(string path)
          {

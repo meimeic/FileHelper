@@ -40,7 +40,31 @@ namespace LisBusiness
             LisSerialResult lsr;
             foreach (DataRow dr in dt.Rows)
             {
-                 lsr = new LisSerialResult();
+                lsr = new LisSerialResult();
+                lsr.PatNo = dr["patno"].ToString();
+                lsr.CName = Convert.ToString(dr["cname"]);
+                lsr.SickTypeNo = Convert.ToString(dr["sicktypeno"]);
+                lsr.VisitNo = Convert.ToString(dr["hospitalizedtimes"]);
+                lsr.SerialNo = dr["serialno"].ToString();
+                if (dr["collectdate"] != null && dr["collectdate"].ToString() != "")
+                {
+                    lsr.CollectDate = string.Format("{0:yyyy-MM-dd}", dr["collectdate"]);
+                }
+                else
+                {
+                    lsr.CollectDate = "";
+                }
+               
+                if (dr["inceptdate"] != null && dr["inceptdate"].ToString() != "")
+                {
+                    lsr.InceptDate = string.Format("{0:yyyy-MM-dd}", dr["inceptdate"]);
+                }
+                else
+                {
+                    lsr.InceptDate = "";
+                }
+                lsr.ReceiveDate = string.Format("{0:yyyy-MM-dd}", dr["receivedate"]);
+                lsr.CheckDate = string.Format("{0:yyyy-MM-dd}", dr["checkdate"]);
                 lsr.SerialNo = dr["serialno"].ToString();
                 if (Convert.ToString(dr["hissendflag"]).Trim() == "1")
                 {
@@ -50,6 +74,8 @@ namespace LisBusiness
                 {
                     lsr.PDFFlag = false;
                 }
+                lsr.ParItemName = Convert.ToString(dr["paritemname"]);
+                lsr.FileName = Convert.ToString(dr["zdy11"]);
                 temp.Add(lsr);
             }
             return temp;
@@ -119,7 +145,7 @@ namespace LisBusiness
         }
         protected virtual string getSQLStr(string where)
         {
-            string sql = "select serialno,hissendflag from reportform" + where;
+            string sql = "select patno,cname,sicktypeno,hospitalizedtimes,serialno,collectdate,inceptdate,receivedate,checkdate,hissendflag,paritemname,zdy11 from reportform" + where;
             return sql;
         }
         private static DataTable getSerialNosTable(string sql)
