@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 namespace FileHelper
 {
@@ -83,6 +81,17 @@ namespace FileHelper
         {
             List<MyFile> myFileList = new List<MyFile>();
             foreach (FileInfo fi in DI.GetFiles("*"+fileType))
+            {
+                myfile = new MyFile(fi);
+                myFileList.Add(myfile);
+            }
+            return myFileList;
+        }
+
+        public List<MyFile> GetSpecificFiles(string fileType,string specName)
+        {
+            List<MyFile> myFileList = new List<MyFile>();
+            foreach (FileInfo fi in DI.GetFiles("*" + specName + fileType))
             {
                 myfile = new MyFile(fi);
                 myFileList.Add(myfile);

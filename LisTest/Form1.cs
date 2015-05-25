@@ -6,8 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
-namespace LisBusiness
+using LisBusiness;
+namespace LisTest
 {
     public partial class Form1 : Form
     {
@@ -18,11 +18,7 @@ namespace LisBusiness
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
+            object o = new object();
 
         }
     }

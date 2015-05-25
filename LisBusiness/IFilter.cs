@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace LisBusiness
 {
-    interface IFilter
+    public abstract class IFilter
     {
-        string FilterName { get; }
-
+        public abstract string GetFilter();
     }
 }

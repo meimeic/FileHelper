@@ -14,51 +14,60 @@ namespace LisBusiness
    public class LisReportPDFService : LisReportPDF
     {
         static readonly ILog LOG = LogManager.GetLogger(typeof(LisReportPDFService));
+        private string _receiveDate; 
         //从lis数据库获取已审核报告记录
         //拼接查询条件
-        protected  void CheckOnDB(string startDate,string endDate)
+        public void setReceiveDate(string date)
         {
-            //从数据库中获取
-            string where = getReportSQLWhere(startDate, endDate);
-            DataTable dt = getReportRecorde(where);
-            List<FileNameAttr> temp;
-            string checkPath;
-            string fileNameLike;
-            foreach (DataRow dr in dt.Rows)
-            {
-                //路径
-                checkPath = getCheckPath(dr);
-                //文件名
-                fileNameLike = getFileName(dr);
-                //文件路径存在
-                if (checkPath != null)
-                {
-                    //清洗数据
-                    temp = getPDFFromFS(checkPath, fileNameLike);
-                    if (temp.Count == 0)
-                    {
-                        //没有生成pdf
-                        LOG.Warn("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "不存在合法的pdf文件！！");
-                    }
-                    else if (temp.Count == 1)
-                    {
-                        //有pdf
-                        FileNameAttr result = temp[0];
-                        LOG.Info("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在合法的pdf文件," + "文件路径为:" + checkPath+"\\"+ result.GetFileNameString());
-                        //LOG.Info("开始---->生成的pdf记录写入PDF表");
-                        //AddToPDFTable(result, dr, checkPath, "1", "正常");
-                        //LOG.Info("结束---->生成的pdf记录写入PDF表");
-                    }
-                    else
-                    {
-                        //生成多个pdf
-                        FileNameAttr result = temp[0];
-                        AddToPDFTable(result, dr, checkPath, "1", "正常");
-                        LOG.Error("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在多个合法的pdf文件！！！");
-                    }
-                }
-            }
+            this._receiveDate = date;
         }
+        public string getReceiveDate()
+        {
+            return this._receiveDate;
+        }
+        //protected  void CheckOnDB(string startDate,string endDate)
+        //{
+        //    //从数据库中获取
+        //    string where = getReportSQLWhere(startDate, endDate);
+        //    DataTable dt = getReportRecorde(where);
+        //    List<FileNameAttr> temp;
+        //    string checkPath;
+        //    string fileNameLike;
+        //    foreach (DataRow dr in dt.Rows)
+        //    {
+        //        //路径
+        //        checkPath = getCheckPath(dr);
+        //        //文件名
+        //        fileNameLike = getFileName(dr);
+        //        //文件路径存在
+        //        if (checkPath != null)
+        //        {
+        //            //清洗数据
+        //            temp = getPDFFromFS(checkPath, fileNameLike);
+        //            if (temp.Count == 0)
+        //            {
+        //                //没有生成pdf
+        //                LOG.Warn("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "不存在合法的pdf文件！！");
+        //            }
+        //            else if (temp.Count == 1)
+        //            {
+        //                //有pdf
+        //                FileNameAttr result = temp[0];
+        //                LOG.Info("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在合法的pdf文件," + "文件路径为:" + checkPath+"\\"+ result.GetFileNameString());
+        //                //LOG.Info("开始---->生成的pdf记录写入PDF表");
+        //                //AddToPDFTable(result, dr, checkPath, "1", "正常");
+        //                //LOG.Info("结束---->生成的pdf记录写入PDF表");
+        //            }
+        //            else
+        //            {
+        //                //生成多个pdf
+        //                FileNameAttr result = temp[0];
+        //                AddToPDFTable(result, dr, checkPath, "1", "正常");
+        //                LOG.Error("病案号为:" + dr["patno"].ToString() + ",住院次数为:" + Convert.ToString(dr["hospitalizedtimes"]) + ",审核时间为:" + dr["checkdate"].ToString() + ",申请单号为:" + dr["serialno"].ToString() + "存在多个合法的pdf文件！！！");
+        //            }
+        //        }
+        //    }
+        //}
 
         private void CheckBaseOnFS()
         {
@@ -287,5 +296,15 @@ namespace LisBusiness
         //    string where = getReportSQLWhere(serialNos);
         //    return getReportFormTable(getReportSQLString(where));
         //}
+
+        protected override string getReportSQLWhere()
+        {
+            StringBuilder where = new StringBuilder();
+            where.Append("where patno is not null and patno <>'' ");
+            where.Append("and receivedate='");
+            where.Append(this._receiveDate);
+            where.Append("'");
+            return where.ToString();
+        }
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 namespace FileHelper
 {
@@ -17,7 +14,8 @@ namespace FileHelper
         public MyFile(string path)
             : base(path)
         {
-            this._fileName = this.Name.Replace(this.Extension, "");
+            FileInfo f = new FileInfo(path);
+            this._fileName = this.Name.Replace(f.Extension, "");
         }
         public string FileName
         {

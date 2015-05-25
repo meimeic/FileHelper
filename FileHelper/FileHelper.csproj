@@ -11,6 +11,8 @@
     <AssemblyName>FileHelper</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,17 +31,20 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>zhKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileZhangImpl.cs" />
     <Compile Include="IFile.cs" />
+    <Compile Include="IFileZhang.cs" />
+    <Compile Include="LisPDFFoler.cs" />
     <Compile Include="MyFile.cs" />
     <Compile Include="FileNameAttr.cs" />
     <Compile Include="MyFoler.cs" />
@@ -47,6 +52,9 @@
     <Compile Include="SuperFile.cs" />
     <Compile Include="SuperFolder.cs" />
     <Compile Include="test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="zhKey.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

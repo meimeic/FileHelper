@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 namespace FileHelper
 {
@@ -10,22 +7,24 @@ namespace FileHelper
         private string _name;
         private string _typeName;
         private DirectoryInfo _di;
-        private string _path;
+        private string _fullName;
         private SuperFolder()
         {
-            this._typeName = "文件夹";
+            this._typeName = "folder";
         }
         public SuperFolder(DirectoryInfo di)
             : this()
         {
             this._di = di;
-            this._path = di.FullName;
+            this._fullName = di.FullName;
+            this._name = di.Name;
         }
         public SuperFolder(string path)
             : this()
         {
-            this._path = path;
-            this._di = new DirectoryInfo(path);
+            this._fullName = path;
+            this._di= new DirectoryInfo(path);
+            this._name = this._di.Name;
         }
         //检查路径是否存在
         public static bool CheckPath(string path)
@@ -34,7 +33,6 @@ namespace FileHelper
         }
         public string Name
         {
-            set { this._name = value; }
             get { return this._name; }
         }
         public string TypeName
@@ -47,7 +45,7 @@ namespace FileHelper
         }
         public string Path
         {
-            get { return this._path; }
+            get { return this._fullName; }
         }
     }
 }

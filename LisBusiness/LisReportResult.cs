@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace LisBusiness
 {
     public class LisReportResult:IResult
     {
         private static readonly string _resultType = "lis";
-
+        private int _fileQuality;
         private string _filePath;
         private string _fileName;
         private string _reportDate;
@@ -20,6 +16,11 @@ namespace LisBusiness
         public string ResultType
         {
             get { return LisReportResult._resultType; }
+        }
+        public int FileQuality
+        {
+            get { return this._fileQuality; }
+            set { this._fileQuality = value; }
         }
         public string FilePath
         {

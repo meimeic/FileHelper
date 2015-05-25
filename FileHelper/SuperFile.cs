@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Data;
 
 namespace FileHelper
 {
-    public  class SuperFile : IFile
+    public class SuperFile : IFile
     {
         //文件全名。
          private string _name;
         //类别，文件还是目录。
          private string _typeName;
-        //文件扩展类型。
-         private string _extension;
+         private string _fullname; 
          private SuperFile()
          {
              this._typeName = "文件";
@@ -23,14 +18,14 @@ namespace FileHelper
              : this()
          {
              this._name = f.Name;
-             this._extension = f.Extension;
+             this._fullname = f.FullName;
          }
          public SuperFile(string path)
              : this()
          {
              FileInfo f = new FileInfo(path);
              this._name = f.Name;
-             this._extension = f.Extension;
+             this._fullname = f.FullName;
          }
          public static bool IsFile(string path)
          {
@@ -51,6 +46,27 @@ namespace FileHelper
              return File.Exists(path);
          }
         //获取指定路径下的文件、文件名称
+         public static string Rename(string path,string oriName,string desName)
+         {
+             string fullName = Path.Combine(path, oriName);
+             string fulldesName=desName.Trim()+".pdf";
+             long startTime = DateTime.Now.Ticks;
+             long currentTime;
+             long runTime;
+             while (!fileExist(fullName))
+             {
+                 //do nothing
+                 currentTime = DateTime.Now.Ticks;
+                 runTime=currentTime-startTime;
+                 if (runTime>100000)
+                 {
+                     return "error--超时！";
+                 }
+             }
+             FileInfo f = new FileInfo(fullName);
+             f.MoveTo(Path.Combine(path, fulldesName));
+             return "ok--成功！";
+         }
          public static string GetFileName(string path)
          {
              if (IsFile(path))
@@ -73,9 +89,8 @@ namespace FileHelper
          {
              get { return this._name; }
          }
-         public string Extension 
-         {
-             get { return this._extension; }
+         public string FullName{
+             get { return this._fullname; }
          }
     }
 }
